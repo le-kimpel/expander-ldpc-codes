@@ -22,7 +22,7 @@ def generate_random_graph(n, c, d, p):
     N = list(N)
     
     # construct the bipartite adjacency matrix: rows correspond to W, columns to N
-    return [[int(B.has_edge(W[i], N[j])) for j in range(len(N))] for i in range(len(W))]
+    return B, [[int(B.has_edge(W[i], N[j])) for j in range(len(N))] for i in range(len(W))]
 
 '''
 Calculate the cheeger constant.
@@ -34,12 +34,13 @@ This constant is typically used to measure the expansion of a particular graph.
 '''
 def get_cheeger_constant(B):
     order = len(B.nodes())
-    sub = utils.ss(B.nodes(), order // 2)
+    sub = utils.ss(list(B.nodes()), order // 2)
     sub.remove([])
     h = order - 1
-    for v in node_sublists:
-        h = min(h, len(nx.edge_boundary(G, v)) / len(v))
+    for v in sub:
+        h = min(h, len(nx.edge_boundary(B, v)) / len(v))
     return h
+
 '''
 Calculate the rate for a particular linear code
 '''
@@ -74,5 +75,6 @@ def decode():
     return 
 
 
-A = generate_random_graph(3,7,3,0.5)
-print(A)
+B, A = generate_random_graph(3,7,3,0.5)
+
+print(get_cheeger_constant(B))

@@ -20,8 +20,10 @@ def ss(i,k):
     smaller_sublists = ss(i[1:], k)
     all_sublists = []
     for s in smaller_sublists:
+        if (s == []):
+            return [[]]
         all_sublists.append(s)
-        if len(s) < k:
+        if (len(s) < k):
             all_sublists.append([s[0]] + s)
     return all_sublists
 
