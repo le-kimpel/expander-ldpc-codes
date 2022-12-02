@@ -1,6 +1,7 @@
 import numpy
 import networkx as nx
 import sympy
+import utils
 from networkx.algorithms import bipartite
 
 '''
@@ -24,11 +25,21 @@ def generate_random_graph(n, c, d, p):
     return [[int(B.has_edge(W[i], N[j])) for j in range(len(N))] for i in range(len(W))]
 
 '''
-Calculate the cheeger constant of a particular graph
+Calculate the cheeger constant.
+The Cheeger constant h(G) of a graph G on n vertices 
+is defined to be min{(|d(S)|/|S|)} for all subsets
+S of G with |S| <= n/2. 
+
+This constant is typically used to measure the expansion of a particular graph.
 '''
 def get_cheeger_constant(B):
-    return 
-
+    order = len(B.nodes())
+    sub = utils.ss(B.nodes(), order // 2)
+    sub.remove([])
+    h = order - 1
+    for v in node_sublists:
+        h = min(h, len(nx.edge_boundary(G, v)) / len(v))
+    return h
 '''
 Calculate the rate for a particular linear code
 '''
