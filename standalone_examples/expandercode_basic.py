@@ -94,11 +94,13 @@ of a biregular (c,d) graph.
 def encode(data):
     return
 
+'''
+Utilize the fast decoding algorithm specified by https://www.cs.yale.edu/homes/spielman/PAPERS/IMA.pdf
+'''
 def decode():
     return 
 
 
 B, A = generate_random_graph(3,7,3,0.5)
 A = utils.parmat_to_std_form(A)
-
 get_generator_matrix(A)
