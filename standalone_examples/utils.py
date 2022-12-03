@@ -56,8 +56,8 @@ def largest_sq_submat(A):
     num_cols = len(A[0])
     
     # given the number of rows, return the index of the largest square submatrix of A
-    piv2 = ncol - num_rows
-    piv1 = ncol - piv_2
+    piv2 = num_cols - num_rows
+    piv1 = num_cols - piv2
     return piv1, piv2
 
 
