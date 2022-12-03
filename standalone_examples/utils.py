@@ -52,7 +52,7 @@ def gauss_jordan(M, pivot_col):
             # subtract current row from remaining rows
             M[j] = M[j] - M[i] * M[j][i]
 
-    # return inverse matrix
+    # return M (since we're technically in a field...M % 2)
     return M%2
 
 '''
