@@ -1,2 +1,3 @@
-# expander-ldpc-codes
-Repo of expander-based and other linear error correction code examples. 
+# expander-code-generator
+Repo containing a few scripts that will (ideally) generate a reasonable expander. 
+
