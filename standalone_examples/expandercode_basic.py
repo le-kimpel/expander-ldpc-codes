@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 import networkx as nx
 import sympy
 import utils
@@ -59,11 +59,34 @@ def visualize(B):
     return 
 
 '''
-Get the code by computing the generator matrix
+Get the code by computing the generator matrix from the standard-form parity matrix H
 '''
-def get_generator_matrix(A):
-    return 
+def get_generator_matrix(H):
 
+    # get P^T, compute the transpose
+    nrows = len(H)
+    ncols = len(H[0])
+    P_t = []
+    for i in range(0, nrows):
+        p_row = []
+        for j in range(nrows, ncols):
+            p_row.append(H[i][j])
+        P_t.append(p_row)
+
+    P_t = np.array(P_t)%2
+    P = np.ndarray.transpose(P_t)
+
+    # now concatenate the appropriate I.d. matrix
+    n = P.shape[0]
+
+    # identity matrix with same shape as A
+    I = np.identity(n=n)
+
+    # form the augmented matrix by concatenating A and I
+    G = np.concatenate((P, I), axis=1)
+    
+    return G 
+    
 '''
 Encode data using a linear code whose parity-check matrix is the adjacency matrix
 of a biregular (c,d) graph. 
@@ -76,5 +99,6 @@ def decode():
 
 
 B, A = generate_random_graph(3,7,3,0.5)
+A = utils.parmat_to_std_form(A)
 
-print(get_cheeger_constant(B))
+get_generator_matrix(A)
