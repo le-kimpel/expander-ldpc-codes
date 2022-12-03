@@ -64,8 +64,8 @@ Calculate the distance for a particular linear code
 def calc_distance(code):
     min_dist = len(code[0])
     for i in range(len(code)):
-	for j in range(i+1, len(code)):
-	    min_dist = min(min_dist, hamming_distance(code[i],code[j]))
+        for j in range(i+1, len(code)):
+            min_dist = min(min_dist, hamming_distance(code[i],code[j]))
     return min_dist
 
 '''
@@ -113,22 +113,30 @@ def encode(data):
     G = get_generator_matrix(A)
 
     # multiply the two matrices to get the codeword C
-    return np.matmul(data,G)
+    return A, np.matmul(data,G)
     
 '''
 Utilize the FLIP decoding algorithm specified by http://people.seas.harvard.edu/~madhusudan/courses/Spring2017/scribe/lect13.pdf
 '''
-def decode(in_data, H, original):
+def decode(in_data, H):
 
+    # preliminary: stick the variables corresponding to unsatisfied constraints in the S_i
     # for each vertex in the columns of H, make sure that each is satisfied and count
-    # the number of unsatisfied vertices
+    # the number of unsatisfied constraints
+    i = 0
 
-    # if the number of unsatisfied vertices exceeds the number of satisfied vertices,
-    # flip the associated bit in in_data
-    
-    return 
+    T = H
+    for row in T:
+        if (row[i] == 1):
+            row[i]=in_data[i]
+            
+        if sum(row)%2 != 0:
+            in_data[i]=(in_data[i]+1)%2
+            i+=1
+        T = H
+    # oh god, this is horrifying, not done yet
+    return in_data
 
 
-B, A = generate_random_graph(3,7,3,0.5)
-A = utils.parmat_to_std_form(A)
-get_generator_matrix(A)
+H, C = encode([1,1,0])
+print(decode([1,1,1], H))
