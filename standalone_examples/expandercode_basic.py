@@ -42,15 +42,31 @@ def get_cheeger_constant(B):
     return h
 
 '''
-Calculate the rate for a particular linear code
+Calculate the rate for a particular linear code, given by:  
+
+http://www.cs.huji.ac.il/~nati/PAPERS/expander_survey.pdf
+
 '''
-def calc_rate(B):
-    return
+def calc_rate(code):
+    return log(len(code), 2) / len(code[0])
+'''
+Compute the Hamming Distance between bistrings
+'''
+def hamming_distance(code1, code2):
+    diff = 0
+    for i in range(len(code1)):
+        if (code1[i] != code2[i]):
+            diff+=1
+    return diff
 '''
 Calculate the distance for a particular linear code
 '''
-def calc_distance(B):
-    return 
+def calc_distance(code):
+    min_dist = len(code[0])
+    for i in range(len(code)):
+	for j in range(i+1, len(code)):
+	    min_dist = min(min_dist, hamming_distance(code[i],code[j]))
+    return min_dist
 
 '''
 Output the graphical model of B
@@ -102,7 +118,14 @@ def encode(data):
 '''
 Utilize the FLIP decoding algorithm specified by http://people.seas.harvard.edu/~madhusudan/courses/Spring2017/scribe/lect13.pdf
 '''
-def decode():
+def decode(in_data, H, original):
+
+    # for each vertex in the columns of H, make sure that each is satisfied and count
+    # the number of unsatisfied vertices
+
+    # if the number of unsatisfied vertices exceeds the number of satisfied vertices,
+    # flip the associated bit in in_data
+    
     return 
 
 
