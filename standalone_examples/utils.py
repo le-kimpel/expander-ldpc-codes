@@ -1,39 +1,59 @@
-import numpy
+import numpy as np
 
 '''
 Just puts a matrix A into reduced-row-echelon form
 
 Included from:
-https://elonen.iki.fi/code/misc-notes/python-gaussj/
+https://towardsdatascience.com/find-the-inverse-of-a-matrix-using-python-3aeb05b48308
 
 '''
-def gauss_jordan(A, pivot_row, pivot_col, eps = 1.0/(10**10)):
-  """Puts given matrix (2D array) into the Reduced Row Echelon Form.
-     Returns True if successful, False if 'm' is singular.
-     NOTE: make sure all the matrix items support fractions! Int matrix will NOT work!
-     Written by Jarno Elonen in April 2005, released into Public Domain"""
-  (h, w) = (len(A), len(A[0]))
-  for y in range(0,h):
-    maxrow = y
-    for y2 in range(y+1, h):    # Find max pivot
-      if abs(m[y2][y]) > abs(m[maxrow][y]):
-        maxrow = y2
-    (m[y], m[maxrow]) = (m[maxrow], m[y])
-    if abs(m[y][y]) <= eps:     # Singular?
-      return False
-    for y2 in range(y+1, h):    # Eliminate column y
-      c = m[y2][y] / m[y][y]
-      for x in range(y, w):
-        m[y2][x] -= m[y][x] * c
-  for y in range(h-1, 0-1, -1): # Backsubstitute
-    c  = m[y][y]
-    for y2 in range(0,y):
-      for x in range(w-1, y-1, -1):
-        m[y2][x] -=  m[y][x] * m[y2][y] / c
-    m[y][y] /= c
-    for x in range(h, w):       # Normalize row y
-      m[y][x] /= c
-  return True
+def gauss_jordan(M, pivot_col):
+
+    n = len(M)
+    M = np.array(M)
+    print(M)
+    # iterate over matrix rows
+    for i in range(0, len(M)):
+       
+        # initialize row-swap iterator
+        j = 1
+
+        k = pivot_col
+        
+        # select pivot value
+        pivot = M[i][i]
+
+        # find next non-zero leading coefficient
+        while pivot == 0 and i + j < n:
+
+            # perform row swap operation
+            M[[i, i + j]] = M[[i + j, i]]
+
+            print(M)
+            # incrememnt row-swap iterator
+            j += 1
+
+            # get new pivot
+            pivot = M[i][i]
+
+        # if pivot is zero, remaining rows are all zeros
+        if pivot == 0:
+            # return inverse matrix
+            return M
+
+        # extract row
+        row = M[i]
+
+        # get 1 along the diagonal
+        M[i] = row / pivot
+
+        # iterate over all rows except pivot to get augmented matrix into reduced row echelon form
+        for j in [k for k in range(0, n) if k != i]:
+            # subtract current row from remaining rows
+            M[j] = M[j] - M[i] * M[j][i]
+
+    # return inverse matrix
+    return M%2
 
 '''
 Matrix multiplication
@@ -56,9 +76,8 @@ def largest_sq_submat(A):
     num_cols = len(A[0])
     
     # given the number of rows, return the index of the largest square submatrix of A
-    piv2 = num_cols - num_rows
-    piv1 = num_cols - piv2
-    return piv1, piv2
+    piv_col = num_cols - num_rows
+    return 0, piv_col
 
 
 '''
