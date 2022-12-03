@@ -92,10 +92,15 @@ Encode data using a linear code whose parity-check matrix is the adjacency matri
 of a biregular (c,d) graph. 
 '''
 def encode(data):
-    return
+    B, A = generate_random_graph(3,7,3,0.5)
+    A = utils.parmat_to_std_form(A)
+    G = get_generator_matrix(A)
 
+    # multiply the two matrices to get the codeword C
+    return np.matmul(data,G)
+    
 '''
-Utilize the fast decoding algorithm specified by https://www.cs.yale.edu/homes/spielman/PAPERS/IMA.pdf
+Utilize the FLIP decoding algorithm specified by http://people.seas.harvard.edu/~madhusudan/courses/Spring2017/scribe/lect13.pdf
 '''
 def decode():
     return 
