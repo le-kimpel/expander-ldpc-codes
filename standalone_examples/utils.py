@@ -7,18 +7,16 @@ Included from:
 https://towardsdatascience.com/find-the-inverse-of-a-matrix-using-python-3aeb05b48308
 
 '''
-def gauss_jordan(M, pivot_col):
+def gauss_jordan(M):
 
     n = len(M)
     M = np.array(M)
-    print(M)
+    
     # iterate over matrix rows
     for i in range(0, len(M)):
        
         # initialize row-swap iterator
         j = 1
-
-        k = pivot_col
         
         # select pivot value
         pivot = M[i][i]
@@ -29,7 +27,6 @@ def gauss_jordan(M, pivot_col):
             # perform row swap operation
             M[[i, i + j]] = M[[i + j, i]]
 
-            print(M)
             # incrememnt row-swap iterator
             j += 1
 
@@ -62,11 +59,11 @@ def mmul(A, B):
     return
 
 '''
-Convert a (n-m) x n parity matrix to standard form 
+Convert a (n-m) x n parity matrix to standard form;
+it can be in the form [-P^T | I_m] or [I_m | -P^T]
 '''
 def parmat_to_std_form(A):
-    return
-
+    return gauss_jordan(A)
 '''
 Get the pivot of the largest square submatrix in A
 '''
@@ -77,7 +74,7 @@ def largest_sq_submat(A):
     
     # given the number of rows, return the index of the largest square submatrix of A
     piv_col = num_cols - num_rows
-    return 0, piv_col
+    return piv_col
 
 
 '''
