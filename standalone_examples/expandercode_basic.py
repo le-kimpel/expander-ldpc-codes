@@ -42,6 +42,12 @@ def get_cheeger_constant(B):
     return h
 
 '''
+Calculate second eigenvalue of a square matrix A
+'''
+def get_2nd_eigenval(A):
+    return np.linalg.eigvals(A)[1]
+
+'''
 Calculate the rate for a particular linear code, given by:  
 
 http://www.cs.huji.ac.il/~nati/PAPERS/expander_survey.pdf
