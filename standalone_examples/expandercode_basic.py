@@ -108,7 +108,17 @@ def get_generator_matrix(H):
     G = np.concatenate((P, I), axis=1)
     
     return G 
-    
+
+'''
+Check if a word C is a codeword!
+'''
+def is_codeword(C,H):
+    vec = np.matmul(C, np.transpose(H)) % 2
+    for entry in vec:
+        if(vec[i] != 0):
+            return False
+    return True
+
 '''
 Encode data using a linear code whose parity-check matrix is the adjacency matrix
 of a biregular (c,d) graph. 
@@ -119,7 +129,7 @@ def encode(data):
     G = get_generator_matrix(A)
 
     # multiply the two matrices to get the codeword C
-    return A, np.matmul(data,G)
+    return A, np.matmul(data,G)%2
     
 '''
 Utilize the FLIP decoding algorithm specified by http://people.seas.harvard.edu/~madhusudan/courses/Spring2017/scribe/lect13.pdf
@@ -129,20 +139,30 @@ def decode(in_data, H):
     # preliminary: stick the variables corresponding to unsatisfied constraints in the S_i
     # for each vertex in the columns of H, make sure that each is satisfied and count
     # the number of unsatisfied constraints
-    i = 0
+    S = []
+    for indx in range(0,len(H)):
+        S.append(indx)
 
-    T = H
-    for row in T:
-        if (row[i] == 1):
-            row[i]=in_data[i]
+    # while the set of variables is unsatified, make sure the parity check equations
+    # are satisfied for each bit of the message in_data; this is O(mn)
+
+    for indx in S:
+        row = H[indx]
+        count = 0
+        for i in range(0,len(in_data)):
+            if(row[i] == in_data[i] == 1):
+                count += 1
+        if (count%2 == 0):
+            # constraint satisfied, get rid of the row
+            S.remove(indx)
+        else:
+            in_data[i] = (in_data[i] + 1)%2
             
-        if sum(row)%2 != 0:
-            in_data[i]=(in_data[i]+1)%2
-            i+=1
-        T = H
-    # oh god, this is horrifying, not done yet
     return in_data
 
-
 H, C = encode([1,1,0])
-print(decode([1,1,1], H))
+
+print(np.matmul(C,np.transpose(H)))
+ans = decode(C,H)
+
+
