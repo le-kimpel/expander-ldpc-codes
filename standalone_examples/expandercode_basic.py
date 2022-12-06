@@ -155,7 +155,8 @@ def decode(in_data, H):
         S.append(indx)
 
     # while the set of variables is unsatified, make sure the parity check equations
-    # are satisfied for each bit of the message in_data; this is O(mn)
+    # are satisfied for each bit of the message in_data; while this is *supposed* to be O(mn),
+    # I'd hesitate to say with certainty that we've achieved completely linear runtime here ;)
 
     for indx in S:
         row = H[indx]
