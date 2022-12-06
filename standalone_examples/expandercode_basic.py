@@ -115,7 +115,7 @@ Check if a word C is a codeword!
 def is_codeword(C,H):
     vec = np.matmul(C, np.transpose(H)) % 2
     for entry in vec:
-        if(vec[i] != 0):
+        if(entry != 0):
             return False
     return True
 
@@ -162,7 +162,8 @@ def decode(in_data, H):
 
 H, C = encode([1,1,0])
 
-print(np.matmul(C,np.transpose(H)))
+#print(np.matmul(C,np.transpose(H)))
 ans = decode(C,H)
+print(is_codeword(ans,H))
 
 
