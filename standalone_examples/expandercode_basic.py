@@ -2,6 +2,7 @@ import numpy as np
 import networkx as nx
 import sympy
 import random
+import math
 import utils
 import matplotlib.pyplot as plt
 from networkx.algorithms import bipartite
@@ -51,7 +52,12 @@ def generate_random_graph_v2(n):
 
     # remove disconnected vertices
     G_prime.remove_nodes_from(list(nx.isolates(G_prime)))
+    visualize(G_prime)
 
+    # compute the 2nd eigenval
+    sq = nx.to_numpy_matrix(G_prime)
+    print("2nd eigenval [Margulis]: " + str(get_2nd_eigenval(sq)))
+    
     if bipartite.is_bipartite(G_prime):
         W,N = nx.bipartite.sets(G_prime)
         W = list(W)
@@ -93,7 +99,7 @@ def generate_random_graph(n, c, d):
             j += 1
 
     sq = nx.to_numpy_matrix(B)
-    print("2nd eigval: " + str(get_2nd_eigenval(sq)))
+    print("2nd eigval [Hacky]: " + str(get_2nd_eigenval(sq)))
 
     if not nx.is_connected(B):
         print("Oops, graph isn't connected, try again with different parameters. [Suggestion: c, d = 2c].")
@@ -116,27 +122,8 @@ Calculate the rate for a particular linear code, given by:
 http://www.cs.huji.ac.il/~nati/PAPERS/expander_survey.pdf
 
 '''
-def calc_rate(code):
-    return log(len(code), 2) / len(code[0])
-'''
-Compute the Hamming Distance between bistrings
-'''
-def hamming_distance(code1, code2):
-    diff = 0
-    for i in range(len(code1)):
-        if (code1[i] != code2[i]):
-            diff+=1
-    return diff
-'''
-Calculate the distance for a particular linear code
-'''
-def calc_distance(code):
-    min_dist = len(code[0])
-    for i in range(len(code)):
-        for j in range(i+1, len(code)):
-            min_dist = min(min_dist, hamming_distance(code[i],code[j]))
-    return min_dist
-
+def calc_rate(codeword):
+    return math.log(len(codeword), 2) / len(codeword)
 '''
 Get the code by computing the generator matrix from the standard-form parity matrix H
 '''
@@ -183,13 +170,20 @@ of a biregular (c,d) graph.
 def encode(data, c, d):
     
     B, A = generate_random_graph(len(data),c,d)
-    if (B == A == None):
+    B2, A2 = generate_random_graph_v2(len(data))
+    if (B == A == None and B2 == A2 == None):
         return -1
     A = utils.parmat_to_std_form(A)
     G = get_generator_matrix(A)
 
+    A2 = utils.parmat_to_std_form(A)
+    G2 = get_generator_matrix(A2)
+
+    if len(G2) != len(data):
+        data.append(0*len(G2)-len(data))
+        
     # multiply the two matrices to get the codeword C
-    return A, np.matmul(data,G)%2
+    return A, A2, np.matmul(data,G)%2,  np.matmul(data,G2)%2
     
 '''
 Utilize the FLIP decoding algorithm specified by http://people.seas.harvard.edu/~madhusudan/courses/Spring2017/scribe/lect13.pdf
@@ -221,10 +215,20 @@ def decode(in_data, H):
             
     return in_data
 
-#H, C = encode([1,1,0], 20, 10)
+# comparing the two generation techniques 
+H1, H2, C1, C2 = encode([1,1,0], 20, 10)
+print("Rate C1: " + str(calc_rate(C1)))
+print("Rate C2: " + str(calc_rate(C2)))
 
-#print(np.matmul(C,np.transpose(H)))
-#ans = decode(C,H)
-#print(is_codeword(ans,H))
+# Multiply the codeword by H
+print(np.matmul(C1,np.transpose(H1))%2)
+print(np.matmul(C2,np.transpose(H2))%2)
 
-generate_random_graph_v2(2)
+ans = decode((C1+1)%2,H1)
+ans2 = decode((C2+1)%2,H2)
+
+print("Decode (C1): " + str(ans))
+print("Decode (C2): " + str(ans2))
+
+print(str(is_codeword(ans,H1)))
+print(str(is_codeword(ans2, H2)))
