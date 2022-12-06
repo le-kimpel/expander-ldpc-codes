@@ -19,22 +19,38 @@ def visualize(B):
 Generate a random bipartite graph whose edge creation has probability p, very hacky.
 We need to also ensure that this graph is connected!
 '''
-def generate_random_graph(n, c, d, p):
+def generate_random_graph(n, c, d):
     # get a bipartite graph G(W \cup N, E), with |W| = n and |N| = (c/d)*n
-    B = bipartite.random_graph(n, int(float(c)/float(d))*n, p)
-
-    while(not nx.is_connected(B)):
-        # regenerate the graph ;)
-        B = bipartite.random_graph(n, int(float(c)/float(d))*n, p)
-    visualize(B)
+    B = bipartite.complete_bipartite_graph(n, int(float(c)/float(d))*n)
         
     # get the nodes in the bipartite sets of B
     W,N = nx.bipartite.sets(B)
     W = list(W)
     N = list(N)
 
+    # make sure it is (d,c)-regular, with c > d
+    # only need to iterate over the first set and remove enough edges so that each vertex is d-regular
+    for i in range(0,len(W)):
+        # if the degree of the vertex is not d, remove edges until it is
+        j = len(W)
+        while(B.degree[i]>d):
+            B.remove_edge(i,j)
+            j+=1
+
+    for i in range(len(W), len(W)+len(N)):
+        j = 0
+        while(B.degree[i]>c):
+            B.remove_edge(j,i)
+            j += 1
+
     sq = nx.to_numpy_matrix(B)
     print("2nd eigval: " + str(get_2nd_eigenval(sq)))
+
+    if not nx.is_connected(B):
+        print("Oops, graph isn't connected, try again with different parameters. [Suggestion: c, d = 2c].")
+        return None, None
+    
+    visualize(B)
     
     # construct the bipartite adjacency matrix: rows correspond to W, columns to N
     return B, [[int(B.has_edge(W[i], N[j])) for j in range(len(N))] for i in range(len(W))]
@@ -115,12 +131,11 @@ def is_codeword(C,H):
 Encode data using a linear code whose parity-check matrix is the adjacency matrix
 of a biregular (c,d) graph. 
 '''
-def encode(data):
-
-    ans = random.sample(range(3, 100), 2)
-    ans.sort()
+def encode(data, c, d):
     
-    B, A = generate_random_graph(len(data),7,3,0.75)
+    B, A = generate_random_graph(len(data),c,d)
+    if (B == A == None):
+        return -1
     A = utils.parmat_to_std_form(A)
     G = get_generator_matrix(A)
 
@@ -156,7 +171,7 @@ def decode(in_data, H):
             
     return in_data
 
-H, C = encode([1,1,0])
+H, C = encode([1,1,0], 20, 10)
 
 #print(np.matmul(C,np.transpose(H)))
 ans = decode(C,H)
