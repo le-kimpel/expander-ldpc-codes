@@ -11,12 +11,61 @@ from networkx.algorithms import bipartite
 Output the graphical model of B!!
 '''
 def visualize(B):
-    nx.draw(B)
+    nx.draw(B, with_labels=True)
     plt.show()
     return 
 
 '''
-Generate a random bipartite graph whose edge creation has probability p, very hacky.
+Use the Margulis-Gabber-Galil construction to generate an expander and then form a bipartite
+graph which inherits its expansion property
+'''
+def generate_random_graph_v2(n):
+    G1 = nx.margulis_gabber_galil_graph(n)
+    G2 = nx.margulis_gabber_galil_graph(n)
+    
+    G1= nx.relabel_nodes(G1, { n: str(n) if n==0 else 'a-'+str(n) for n in  G1.nodes })
+    G2= nx.relabel_nodes(G2, { n: str(n) if n==0 else 'b-'+str(n) for n in  G2.nodes })
+
+
+    vert = list(G2.nodes())
+    G_prime =  nx.union(G1,G2)
+
+    for i in G1.nodes:
+        indx = 0
+        for j in G1.nodes:
+            k = vert[indx]
+            if G1.has_edge(i,j):
+                G_prime.add_edge(i, k)
+                if G_prime.has_edge(i,j):
+                    G_prime.remove_edge(i,j)
+                indx+=1
+
+    for i in G2.nodes:
+        for j in G2.nodes:
+            if G2.has_edge(i,j):
+                if G_prime.has_edge(i,j):
+                    G_prime.remove_edge(i,j)
+
+    # remove self-loops
+    G_prime.remove_edges_from(nx.selfloop_edges(G_prime))
+
+    # remove disconnected vertices
+    G_prime.remove_nodes_from(list(nx.isolates(G_prime)))
+
+    if bipartite.is_bipartite(G_prime):
+        W,N = nx.bipartite.sets(G_prime)
+        W = list(W)
+        N = list(N)
+        return G_prime, [[int(G_prime.has_edge(W[i], N[j])) for j in range(len(N))] for i in range(len(W))]
+    else:
+        return None, None 
+
+
+
+
+
+'''
+Generate a bipartite (d,c) regular graph, very hacky.
 We need to also ensure that this graph is connected!
 '''
 def generate_random_graph(n, c, d):
@@ -172,9 +221,10 @@ def decode(in_data, H):
             
     return in_data
 
-H, C = encode([1,1,0], 20, 10)
+#H, C = encode([1,1,0], 20, 10)
 
 #print(np.matmul(C,np.transpose(H)))
-ans = decode(C,H)
-print(is_codeword(ans,H))
+#ans = decode(C,H)
+#print(is_codeword(ans,H))
 
+generate_random_graph_v2(2)
