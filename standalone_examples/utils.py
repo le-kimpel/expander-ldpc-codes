@@ -53,12 +53,6 @@ def gauss_jordan(M):
     return M%2
 
 '''
-Matrix multiplication
-'''
-def mmul(A, B):
-    return
-
-'''
 Convert a (n-m) x n parity matrix to standard form;
 it can be in the form [-P^T | I_m] or [I_m | -P^T]
 '''
@@ -75,26 +69,4 @@ def largest_sq_submat(A):
     # given the number of rows, return the index of the largest square submatrix of A
     piv_col = num_cols - num_rows
     return piv_col
-
-
-'''
-Get sufficiently small subset orders for a given graph
-Included from:
-
-https://github.com/nwalton125/expanders/blob/a517de3ef741185640b64ca5c898087d6fde30f3/python/magicalECCS.py
-'''
-def ss(i,k):
-    if k < 0:
-        return []
-    elif i == [] or k == 0:
-        return [[]]
-    smaller_sublists = ss(i[1:], k)
-    all_sublists = []
-    for s in smaller_sublists:
-        if (s == []):
-            return [[]]
-        all_sublists.append(s)
-        if (len(s) < k):
-            all_sublists.append([s[0]] + s)
-    return all_sublists
 
