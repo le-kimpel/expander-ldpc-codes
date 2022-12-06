@@ -3,7 +3,17 @@ import networkx as nx
 import sympy
 import random
 import utils
+import matplotlib.pyplot as plt
 from networkx.algorithms import bipartite
+
+
+'''
+Output the graphical model of B!!
+'''
+def visualize(B):
+    nx.draw(B)
+    plt.show()
+    return 
 
 '''
 Generate a random bipartite graph whose edge creation has probability p, very hacky.
@@ -16,6 +26,7 @@ def generate_random_graph(n, c, d, p):
     while(not nx.is_connected(B)):
         # regenerate the graph ;)
         B = bipartite.random_graph(n, int(float(c)/float(d))*n, p)
+    visualize(B)
         
     # get the nodes in the bipartite sets of B
     W,N = nx.bipartite.sets(B)
@@ -24,7 +35,6 @@ def generate_random_graph(n, c, d, p):
 
     sq = nx.to_numpy_matrix(B)
     print("2nd eigval: " + str(get_2nd_eigenval(sq)))
-    print("cheeger const: " + str(get_cheeger_constant(B)))
     
     # construct the bipartite adjacency matrix: rows correspond to W, columns to N
     return B, [[int(B.has_edge(W[i], N[j])) for j in range(len(N))] for i in range(len(W))]
@@ -61,12 +71,6 @@ def calc_distance(code):
         for j in range(i+1, len(code)):
             min_dist = min(min_dist, hamming_distance(code[i],code[j]))
     return min_dist
-
-'''
-Output the graphical model of B
-'''
-def visualize(B):
-    return 
 
 '''
 Get the code by computing the generator matrix from the standard-form parity matrix H
@@ -157,5 +161,4 @@ H, C = encode([1,1,0])
 #print(np.matmul(C,np.transpose(H)))
 ans = decode(C,H)
 print(is_codeword(ans,H))
-
 
